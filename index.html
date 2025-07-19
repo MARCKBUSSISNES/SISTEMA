@@ -118,13 +118,28 @@
       border-radius: 1rem;
       padding: .7rem 1.5rem;
       font-size: 1.02rem;
+      margin-bottom: .7rem;
+      font-weight: 700;
+      cursor: pointer;
+      margin-top: .7rem;
+      transition: background 0.2s;
+      margin-right: .7rem;
+    }
+    .excel-btn:active { background: #2a60b7;}
+    .reset-btn {
+      background: var(--danger);
+      color: #fff;
+      border: none;
+      border-radius: 1rem;
+      padding: .7rem 1.5rem;
+      font-size: 1.02rem;
       margin-bottom: 1.3rem;
       font-weight: 700;
       cursor: pointer;
       margin-top: .7rem;
       transition: background 0.2s;
     }
-    .excel-btn:active { background: #2a60b7;}
+    .reset-btn:active { background: #bb2929; }
     @keyframes fadeIn {
       from { opacity: 0; transform: translateY(15px);}
       to   { opacity: 1; transform: none;}
@@ -140,6 +155,7 @@
   <div class="container">
     <h1>Control de Kilometraje</h1>
     <button class="excel-btn" onclick="exportToExcel()">Descargar Excel</button>
+    <button class="reset-btn" onclick="resetData()">Resetear Datos</button>
     <form id="km-form" autocomplete="off">
       <div class="row2">
         <input type="datetime-local" id="fecha-input" required style="flex:1.7">
@@ -171,7 +187,6 @@
 
     // Helpers
     function toLocaleDatetimeLocal(dt) {
-      // Ajuste para compatibilidad móviles (YYYY-MM-DDTHH:mm)
       return new Date(dt.getTime() - dt.getTimezoneOffset() * 60000)
         .toISOString()
         .slice(0, 16);
@@ -214,7 +229,6 @@
         .map((entry, idx) => ({...entry, idx}))
         .sort((a,b) => new Date(b.fecha) - new Date(a.fecha))
         .forEach((entry, indexSorted, arr) => {
-          // Calcular diferencia vs registro anterior (por fecha, no posición)
           const entriesByDate = kmHistory.slice().sort((a,b) => new Date(a.fecha) - new Date(b.fecha));
           const currPos = entriesByDate.findIndex(e => e.fecha === entry.fecha && e.km === entry.km);
           const prev = currPos > 0 ? entriesByDate[currPos-1] : null;
@@ -250,7 +264,6 @@
         return;
       }
 
-      // Validación: km no puede ser menor a un registro anterior
       let idx = editIndex.value !== '' ? parseInt(editIndex.value,10) : null;
       let isEdit = idx !== null && !isNaN(idx);
       let sortedEntries = kmHistory.slice().sort((a,b)=>new Date(a.fecha)-new Date(b.fecha));
@@ -292,7 +305,6 @@
         alert("No hay datos para exportar.");
         return;
       }
-      // Orden cronológico
       const sorted = kmHistory.slice().sort((a,b) => new Date(a.fecha) - new Date(b.fecha));
       let data = [["Fecha y hora", "Kilometraje", "Gasolina Q", "Galones", "Km recorridos"]];
       sorted.forEach((e,i)=>{
@@ -309,6 +321,23 @@
       let wb = XLSX.utils.book_new();
       XLSX.utils.book_append_sheet(wb, ws, "Kilometraje");
       XLSX.writeFile(wb, "KilometrajeVehiculo.xlsx");
+    }
+
+    // Resetear datos con clave
+    window.resetData = function() {
+      let clave = prompt("Para resetear todos los datos, ingrese la clave:");
+      if(clave === null) return;
+      if(clave === "22782522") {
+        if(confirm("¿Está seguro que desea borrar TODOS los datos? Esta acción no se puede deshacer.")) {
+          localStorage.removeItem(STORAGE_KEY);
+          kmHistory = [];
+          renderHistory();
+          clearForm();
+          alert("¡Todos los datos han sido borrados!");
+        }
+      } else {
+        alert("Clave incorrecta. No se han borrado los datos.");
+      }
     }
 
     // Inicializar
