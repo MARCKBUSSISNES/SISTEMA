@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
   <title>Control de Kilometraje Vehicular</title>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@500;700&display=swap" rel="stylesheet">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
@@ -16,62 +16,85 @@
       --accent: #333;
       --danger: #ff5656;
     }
-    body {
+    html, body {
+      height: 100%;
       margin: 0;
+      padding: 0;
       font-family: 'Roboto', sans-serif;
       background: linear-gradient(135deg, var(--main) 60%, var(--sec) 100%);
       min-height: 100vh;
+      width: 100vw;
+      box-sizing: border-box;
+    }
+    body {
       display: flex;
       align-items: center;
       justify-content: center;
+      min-height: 100vh;
+      width: 100vw;
+      margin: 0;
     }
     .container {
       background: var(--card);
-      border-radius: 2rem;
+      border-radius: 1.2rem;
       box-shadow: 0 8px 32px rgba(0,0,0,0.12);
-      padding: 2rem 1rem;
-      width: 100%;
-      max-width: 470px;
-      margin: 1rem;
+      padding: 1.2rem .7rem;
+      width: 100vw;
+      max-width: 430px;
+      margin: 0 auto;
+      box-sizing: border-box;
       text-align: center;
     }
     h1 {
       color: var(--main);
-      font-size: 2rem;
-      margin-bottom: .2rem;
+      font-size: 1.55rem;
+      margin-bottom: .6rem;
     }
     form {
       display: flex;
       flex-direction: column;
-      gap: 1rem;
-      margin-bottom: 2rem;
+      gap: .7rem;
+      margin-bottom: 1.3rem;
     }
     input, select {
-      padding: 1rem;
-      border-radius: 1rem;
+      padding: .85rem;
+      border-radius: .95rem;
       border: 1px solid #d2dbe3;
-      font-size: 1.1rem;
+      font-size: 1.02rem;
       outline: none;
       background: #f5f8fa;
       color: var(--text);
       transition: border-color 0.2s;
+      box-sizing: border-box;
+      width: 100%;
+      margin-bottom: 0;
     }
     input:focus, select:focus {
       border-color: var(--sec);
     }
-    .row2 { display: flex; gap: .5rem; }
-    .row2 > * { flex: 1;}
+    .row2 {
+      display: flex;
+      gap: .5rem;
+      width: 100%;
+      margin-bottom: 0;
+    }
+    .row2 > * {
+      flex: 1 1 0;
+      min-width: 0;
+    }
     button, .btn {
-      padding: .9rem;
+      padding: .82rem;
       border: none;
       border-radius: 1rem;
       background: var(--sec);
       color: #fff;
-      font-size: 1.05rem;
+      font-size: 1.04rem;
       font-weight: 700;
       cursor: pointer;
       transition: background 0.2s;
-      margin-top: 0.2rem;
+      margin-top: .22rem;
+      width: 100%;
+      box-sizing: border-box;
     }
     .btn {
       display: inline-block;
@@ -85,85 +108,94 @@
     .btn-edit { background: #3888ff; margin-right: 6px;}
     .btn-delete { background: var(--danger);}
     .history {
-      margin-top: 1.5rem;
+      margin-top: 1.05rem;
       text-align: left;
-      max-height: 340px;
+      max-height: 260px;
       overflow-y: auto;
       padding-right: 3px;
+      box-sizing: border-box;
     }
     .history-entry {
       background: #e6fbf4;
-      margin-bottom: .7rem;
-      padding: .7rem .8rem;
+      margin-bottom: .57rem;
+      padding: .7rem .85rem;
       border-radius: 1rem;
       box-shadow: 0 2px 6px rgba(0,0,0,0.03);
-      font-size: 1.09rem;
+      font-size: .98rem;
       display: flex;
       justify-content: space-between;
       align-items: center;
       gap: .6rem;
       animation: fadeIn .6s;
+      word-break: break-word;
     }
     .entry-details {
       flex: 1;
+      min-width: 0;
     }
-    .date { font-size: .97rem; color: #567; font-weight: 500;}
-    .km, .qtz, .gal { font-size: 1rem; color: var(--main); font-weight: 700;}
-    .diff { font-size: .97rem; color: var(--sec); font-weight: 700;}
-    .empty { color: #999; text-align: center; padding: 1.5rem 0; font-size: 1.12rem;}
+    .date { font-size: .93rem; color: #567; font-weight: 500;}
+    .km, .qtz, .gal { font-size: .99rem; color: var(--main); font-weight: 700;}
+    .diff { font-size: .94rem; color: var(--sec); font-weight: 700;}
+    .empty { color: #999; text-align: center; padding: 1.1rem 0; font-size: 1.04rem;}
+    .excel-btn, .reset-btn {
+      width: 49%;
+      display: inline-block;
+      margin-bottom: .7rem;
+      margin-top: .7rem;
+      box-sizing: border-box;
+      font-size: 1.01rem;
+      font-weight: 700;
+    }
     .excel-btn {
       background: #3888ff;
       color: #fff;
-      border: none;
-      border-radius: 1rem;
-      padding: .7rem 1.5rem;
-      font-size: 1.02rem;
-      margin-bottom: .7rem;
-      font-weight: 700;
-      cursor: pointer;
-      margin-top: .7rem;
-      transition: background 0.2s;
-      margin-right: .7rem;
+      margin-right: 2%;
     }
     .excel-btn:active { background: #2a60b7;}
     .reset-btn {
       background: var(--danger);
       color: #fff;
-      border: none;
-      border-radius: 1rem;
-      padding: .7rem 1.5rem;
-      font-size: 1.02rem;
-      margin-bottom: 1.3rem;
-      font-weight: 700;
-      cursor: pointer;
-      margin-top: .7rem;
-      transition: background 0.2s;
     }
     .reset-btn:active { background: #bb2929; }
     @keyframes fadeIn {
       from { opacity: 0; transform: translateY(15px);}
       to   { opacity: 1; transform: none;}
     }
-    @media (max-width: 480px) {
-      .container { max-width: 99vw; padding: 1rem .3rem; }
-      h1 { font-size: 1.45rem;}
-      .history { max-height: 250px;}
+    @media (max-width: 450px) {
+      .container {
+        max-width: 99vw;
+        padding: .6rem .2rem;
+        border-radius: 0.5rem;
+      }
+      .row2 {
+        flex-direction: column;
+        gap: .25rem;
+      }
+      button, .btn, .excel-btn, .reset-btn {
+        font-size: .97rem;
+        padding: .74rem;
+      }
+      .history {
+        max-height: 195px;
+      }
     }
   </style>
 </head>
 <body>
   <div class="container">
     <h1>Control de Kilometraje</h1>
-    <button class="excel-btn" onclick="exportToExcel()">Descargar Excel</button>
-    <button class="reset-btn" onclick="resetData()">Resetear Datos</button>
+    <div style="display:flex;gap:.6rem;justify-content:space-between;">
+      <button class="excel-btn" onclick="exportToExcel()">Descargar Excel</button>
+      <button class="reset-btn" onclick="resetData()">Resetear Datos</button>
+    </div>
     <form id="km-form" autocomplete="off">
+      <!-- La fecha no se muestra ni es editable, solo se coloca automáticamente -->
       <div class="row2">
-        <input type="datetime-local" id="fecha-input" required style="flex:1.7">
-        <input type="number" id="km-input" min="0" required placeholder="Kilometraje" style="flex:1.3">
+        <input type="number" id="km-input" min="0" required placeholder="Kilometraje">
       </div>
       <div class="row2">
-        <input type="number" id="qtz-input" min="0" step="0.01" required placeholder="Gasolina Q" title="Quetzales">
-        <input type="number" id="gal-input" min="0" step="0.01" required placeholder="Gasolina Gal" title="Galones">
+        <input type="number" id="qtz-input" min="0" step="0.01" required placeholder="Gasolina Q">
+        <input type="number" id="gal-input" min="0" step="0.01" required placeholder="Gasolina Gal">
       </div>
       <button type="submit" id="save-btn">Registrar / Guardar</button>
       <input type="hidden" id="edit-index">
@@ -176,7 +208,6 @@
   <script>
     const form = document.getElementById('km-form');
     const kmInput = document.getElementById('km-input');
-    const fechaInput = document.getElementById('fecha-input');
     const qtzInput = document.getElementById('qtz-input');
     const galInput = document.getElementById('gal-input');
     const historyDiv = document.getElementById('history');
@@ -185,19 +216,15 @@
     const STORAGE_KEY = "km-history-v2";
     let kmHistory = [];
 
-    // Helpers
-    function toLocaleDatetimeLocal(dt) {
-      return new Date(dt.getTime() - dt.getTimezoneOffset() * 60000)
-        .toISOString()
-        .slice(0, 16);
+    function getCurrentDatetime() {
+      // Obtiene la fecha/hora exacta en ISO string
+      return new Date().toISOString();
     }
     function fmtDatetimeLocal(str) {
       let d = new Date(str);
       return d.toLocaleDateString('es-ES', {year: 'numeric', month: 'short', day: '2-digit'}) +
         ' ' + d.toLocaleTimeString('es-ES', {hour: '2-digit', minute: '2-digit'});
     }
-
-    // Cargar historial desde LocalStorage
     function loadHistory() {
       const data = localStorage.getItem(STORAGE_KEY);
       if(data) {
@@ -209,16 +236,13 @@
     function saveHistory() {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(kmHistory));
     }
-
     function clearForm() {
-      fechaInput.value = toLocaleDatetimeLocal(new Date());
       kmInput.value = '';
       qtzInput.value = '';
       galInput.value = '';
       editIndex.value = '';
       saveBtn.textContent = 'Registrar / Guardar';
     }
-
     function renderHistory() {
       historyDiv.innerHTML = '';
       if(kmHistory.length === 0) {
@@ -251,21 +275,22 @@
         });
     }
 
-    // Añadir o editar registro
+    // Solo puedes ingresar/editar con la fecha/hora automática
     form.onsubmit = e => {
       e.preventDefault();
-      const fecha = fechaInput.value;
       const km = parseInt(kmInput.value, 10);
       const qtz = parseFloat(qtzInput.value);
       const gal = parseFloat(galInput.value);
+      const fecha = getCurrentDatetime();
 
-      if(!fecha || isNaN(km) || isNaN(qtz) || isNaN(gal) || km < 0 || qtz < 0 || gal < 0) {
+      if(isNaN(km) || isNaN(qtz) || isNaN(gal) || km < 0 || qtz < 0 || gal < 0) {
         alert("Por favor, ingresa datos válidos.");
         return;
       }
 
       let idx = editIndex.value !== '' ? parseInt(editIndex.value,10) : null;
       let isEdit = idx !== null && !isNaN(idx);
+
       let sortedEntries = kmHistory.slice().sort((a,b)=>new Date(a.fecha)-new Date(b.fecha));
       let before = sortedEntries.find(e=>new Date(e.fecha)<new Date(fecha));
       let after = sortedEntries.find(e=>new Date(e.fecha)>new Date(fecha));
@@ -278,7 +303,8 @@
         return;
       }
       if(isEdit) {
-        kmHistory[idx] = { fecha, km, qtz, gal };
+        // Mantiene la fecha original del registro editado
+        kmHistory[idx] = { fecha: kmHistory[idx].fecha, km, qtz, gal };
       } else {
         kmHistory.push({ fecha, km, qtz, gal });
       }
@@ -286,11 +312,8 @@
       renderHistory();
       clearForm();
     };
-
-    // Editar registro
     window.editEntry = function(idx) {
       const entry = kmHistory[idx];
-      fechaInput.value = toLocaleDatetimeLocal(new Date(entry.fecha));
       kmInput.value = entry.km;
       qtzInput.value = entry.qtz;
       galInput.value = entry.gal;
@@ -298,8 +321,6 @@
       saveBtn.textContent = 'Guardar Cambios';
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
-
-    // Exportar a Excel
     window.exportToExcel = function() {
       if(kmHistory.length === 0) {
         alert("No hay datos para exportar.");
@@ -322,8 +343,6 @@
       XLSX.utils.book_append_sheet(wb, ws, "Kilometraje");
       XLSX.writeFile(wb, "KilometrajeVehiculo.xlsx");
     }
-
-    // Resetear datos con clave
     window.resetData = function() {
       let clave = prompt("Para resetear todos los datos, ingrese la clave:");
       if(clave === null) return;
@@ -339,8 +358,6 @@
         alert("Clave incorrecta. No se han borrado los datos.");
       }
     }
-
-    // Inicializar
     clearForm();
     loadHistory();
   </script>
