@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Control de Kilometraje Vehicular</title>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@500;700&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
   <style>
     :root {
       --main: #222b35;
@@ -13,6 +14,7 @@
       --text: #222b35;
       --card: #fff;
       --accent: #333;
+      --danger: #ff5656;
     }
     body {
       margin: 0;
@@ -29,7 +31,7 @@
       box-shadow: 0 8px 32px rgba(0,0,0,0.12);
       padding: 2rem 1rem;
       width: 100%;
-      max-width: 420px;
+      max-width: 470px;
       margin: 1rem;
       text-align: center;
     }
@@ -44,33 +46,44 @@
       gap: 1rem;
       margin-bottom: 2rem;
     }
-    input[type="number"] {
+    input, select {
       padding: 1rem;
       border-radius: 1rem;
       border: 1px solid #d2dbe3;
-      font-size: 1.2rem;
+      font-size: 1.1rem;
       outline: none;
       background: #f5f8fa;
       color: var(--text);
       transition: border-color 0.2s;
     }
-    input[type="number"]:focus {
+    input:focus, select:focus {
       border-color: var(--sec);
     }
-    button {
+    .row2 { display: flex; gap: .5rem; }
+    .row2 > * { flex: 1;}
+    button, .btn {
       padding: .9rem;
       border: none;
       border-radius: 1rem;
       background: var(--sec);
       color: #fff;
-      font-size: 1.15rem;
+      font-size: 1.05rem;
       font-weight: 700;
       cursor: pointer;
       transition: background 0.2s;
+      margin-top: 0.2rem;
     }
-    button:active {
+    .btn {
+      display: inline-block;
+      padding: .5rem 1rem;
+      font-size: 1rem;
+      margin-top: 0;
+    }
+    button:active, .btn:active {
       background: #009e6d;
     }
+    .btn-edit { background: #3888ff; margin-right: 6px;}
+    .btn-delete { background: var(--danger);}
     .history {
       margin-top: 1.5rem;
       text-align: left;
@@ -80,61 +93,64 @@
     }
     .history-entry {
       background: #e6fbf4;
-      margin-bottom: .8rem;
-      padding: .8rem 1rem;
+      margin-bottom: .7rem;
+      padding: .7rem .8rem;
       border-radius: 1rem;
       box-shadow: 0 2px 6px rgba(0,0,0,0.03);
       font-size: 1.09rem;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      gap: .8rem;
+      gap: .6rem;
       animation: fadeIn .6s;
     }
-    .date {
-      font-size: .98rem;
-      color: #567;
-      font-weight: 500;
+    .entry-details {
+      flex: 1;
     }
-    .km {
-      font-size: 1.09rem;
-      color: var(--main);
+    .date { font-size: .97rem; color: #567; font-weight: 500;}
+    .km, .qtz, .gal { font-size: 1rem; color: var(--main); font-weight: 700;}
+    .diff { font-size: .97rem; color: var(--sec); font-weight: 700;}
+    .empty { color: #999; text-align: center; padding: 1.5rem 0; font-size: 1.12rem;}
+    .excel-btn {
+      background: #3888ff;
+      color: #fff;
+      border: none;
+      border-radius: 1rem;
+      padding: .7rem 1.5rem;
+      font-size: 1.02rem;
+      margin-bottom: 1.3rem;
       font-weight: 700;
+      cursor: pointer;
+      margin-top: .7rem;
+      transition: background 0.2s;
     }
-    .diff {
-      font-size: 1.06rem;
-      color: var(--sec);
-      font-weight: 700;
-    }
-    .empty {
-      color: #999;
-      text-align: center;
-      padding: 1.8rem 0;
-      font-size: 1.15rem;
-    }
+    .excel-btn:active { background: #2a60b7;}
     @keyframes fadeIn {
       from { opacity: 0; transform: translateY(15px);}
       to   { opacity: 1; transform: none;}
     }
-    @media (max-width: 450px) {
+    @media (max-width: 480px) {
       .container { max-width: 99vw; padding: 1rem .3rem; }
       h1 { font-size: 1.45rem;}
+      .history { max-height: 250px;}
     }
   </style>
 </head>
 <body>
   <div class="container">
     <h1>Control de Kilometraje</h1>
+    <button class="excel-btn" onclick="exportToExcel()">Descargar Excel</button>
     <form id="km-form" autocomplete="off">
-      <input 
-        type="number" 
-        id="km-input"
-        min="0"
-        required
-        placeholder="Ingresa el kilometraje actual"
-        inputmode="numeric"
-      />
-      <button type="submit">Registrar Kilometraje</button>
+      <div class="row2">
+        <input type="datetime-local" id="fecha-input" required style="flex:1.7">
+        <input type="number" id="km-input" min="0" required placeholder="Kilometraje" style="flex:1.3">
+      </div>
+      <div class="row2">
+        <input type="number" id="qtz-input" min="0" step="0.01" required placeholder="Gasolina Q" title="Quetzales">
+        <input type="number" id="gal-input" min="0" step="0.01" required placeholder="Gasolina Gal" title="Galones">
+      </div>
+      <button type="submit" id="save-btn">Registrar / Guardar</button>
+      <input type="hidden" id="edit-index">
     </form>
     <div>
       <strong>Historial de registros:</strong>
@@ -144,82 +160,159 @@
   <script>
     const form = document.getElementById('km-form');
     const kmInput = document.getElementById('km-input');
+    const fechaInput = document.getElementById('fecha-input');
+    const qtzInput = document.getElementById('qtz-input');
+    const galInput = document.getElementById('gal-input');
     const historyDiv = document.getElementById('history');
-    const STORAGE_KEY = "km-history-v1";
+    const editIndex = document.getElementById('edit-index');
+    const saveBtn = document.getElementById('save-btn');
+    const STORAGE_KEY = "km-history-v2";
     let kmHistory = [];
+
+    // Helpers
+    function toLocaleDatetimeLocal(dt) {
+      // Ajuste para compatibilidad móviles (YYYY-MM-DDTHH:mm)
+      return new Date(dt.getTime() - dt.getTimezoneOffset() * 60000)
+        .toISOString()
+        .slice(0, 16);
+    }
+    function fmtDatetimeLocal(str) {
+      let d = new Date(str);
+      return d.toLocaleDateString('es-ES', {year: 'numeric', month: 'short', day: '2-digit'}) +
+        ' ' + d.toLocaleTimeString('es-ES', {hour: '2-digit', minute: '2-digit'});
+    }
 
     // Cargar historial desde LocalStorage
     function loadHistory() {
       const data = localStorage.getItem(STORAGE_KEY);
       if(data) {
-        try {
-          kmHistory = JSON.parse(data);
-        } catch { kmHistory = []; }
-      } else {
-        kmHistory = [];
-      }
+        try { kmHistory = JSON.parse(data); }
+        catch { kmHistory = []; }
+      } else { kmHistory = []; }
       renderHistory();
     }
-
-    // Guardar historial en LocalStorage
     function saveHistory() {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(kmHistory));
     }
 
-    // Renderizar historial en pantalla
+    function clearForm() {
+      fechaInput.value = toLocaleDatetimeLocal(new Date());
+      kmInput.value = '';
+      qtzInput.value = '';
+      galInput.value = '';
+      editIndex.value = '';
+      saveBtn.textContent = 'Registrar / Guardar';
+    }
+
     function renderHistory() {
       historyDiv.innerHTML = '';
       if(kmHistory.length === 0) {
         historyDiv.innerHTML = '<div class="empty">No hay registros aún.</div>';
         return;
       }
-      kmHistory.slice().reverse().forEach((entry, idx) => {
-        const prev = kmHistory[kmHistory.length - (idx+2)];
-        const diff = prev ? entry.km - prev.km : 0;
-        const html = `
-          <div class="history-entry">
-            <div>
-              <div class="date">${entry.date}</div>
-              <div class="km">Km: ${entry.km.toLocaleString()}</div>
+      kmHistory
+        .map((entry, idx) => ({...entry, idx}))
+        .sort((a,b) => new Date(b.fecha) - new Date(a.fecha))
+        .forEach((entry, indexSorted, arr) => {
+          // Calcular diferencia vs registro anterior (por fecha, no posición)
+          const entriesByDate = kmHistory.slice().sort((a,b) => new Date(a.fecha) - new Date(b.fecha));
+          const currPos = entriesByDate.findIndex(e => e.fecha === entry.fecha && e.km === entry.km);
+          const prev = currPos > 0 ? entriesByDate[currPos-1] : null;
+          const diff = prev ? entry.km - prev.km : 0;
+          const html = `
+            <div class="history-entry">
+              <div class="entry-details">
+                <div class="date">${fmtDatetimeLocal(entry.fecha)}</div>
+                <div class="km">Km: ${Number(entry.km).toLocaleString()}</div>
+                <div class="qtz">Gasolina: Q${Number(entry.qtz).toLocaleString(undefined,{minimumFractionDigits:2})}</div>
+                <div class="gal">Galones: ${Number(entry.gal).toLocaleString(undefined,{minimumFractionDigits:2})} gal</div>
+                <div class="diff">${prev ? `+${diff} km desde anterior` : '---'}</div>
+              </div>
+              <div>
+                <button class="btn btn-edit" onclick="editEntry(${entry.idx})">Editar</button>
+              </div>
             </div>
-            <div>
-              <span class="diff">${prev ? `+${diff} km` : '---'}</span>
-            </div>
-          </div>
-        `;
-        historyDiv.insertAdjacentHTML('beforeend', html);
-      });
+          `;
+          historyDiv.insertAdjacentHTML('beforeend', html);
+        });
     }
 
-    // Form submit
+    // Añadir o editar registro
     form.onsubmit = e => {
       e.preventDefault();
+      const fecha = fechaInput.value;
       const km = parseInt(kmInput.value, 10);
-      if(isNaN(km) || km < 0) {
-        kmInput.value = '';
-        kmInput.focus();
+      const qtz = parseFloat(qtzInput.value);
+      const gal = parseFloat(galInput.value);
+
+      if(!fecha || isNaN(km) || isNaN(qtz) || isNaN(gal) || km < 0 || qtz < 0 || gal < 0) {
+        alert("Por favor, ingresa datos válidos.");
         return;
       }
-      const now = new Date();
-      const entry = {
-        km,
-        date: now.toLocaleDateString('es-ES', {
-          year: 'numeric', month: 'short', day: '2-digit'
-        }) + ' ' +
-        now.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit'}),
-      };
-      if(kmHistory.length && km < kmHistory[kmHistory.length-1].km) {
-        alert("No puedes ingresar un kilometraje menor al anterior.");
+
+      // Validación: km no puede ser menor a un registro anterior
+      let idx = editIndex.value !== '' ? parseInt(editIndex.value,10) : null;
+      let isEdit = idx !== null && !isNaN(idx);
+      let sortedEntries = kmHistory.slice().sort((a,b)=>new Date(a.fecha)-new Date(b.fecha));
+      let before = sortedEntries.find(e=>new Date(e.fecha)<new Date(fecha));
+      let after = sortedEntries.find(e=>new Date(e.fecha)>new Date(fecha));
+      if(before && km < before.km) {
+        alert("El kilometraje no puede ser menor que el registro anterior.");
         return;
       }
-      kmHistory.push(entry);
+      if(after && km > after.km) {
+        alert("El kilometraje no puede ser mayor que el siguiente registro.");
+        return;
+      }
+      if(isEdit) {
+        kmHistory[idx] = { fecha, km, qtz, gal };
+      } else {
+        kmHistory.push({ fecha, km, qtz, gal });
+      }
       saveHistory();
       renderHistory();
-      kmInput.value = '';
-      kmInput.focus();
+      clearForm();
     };
 
+    // Editar registro
+    window.editEntry = function(idx) {
+      const entry = kmHistory[idx];
+      fechaInput.value = toLocaleDatetimeLocal(new Date(entry.fecha));
+      kmInput.value = entry.km;
+      qtzInput.value = entry.qtz;
+      galInput.value = entry.gal;
+      editIndex.value = idx;
+      saveBtn.textContent = 'Guardar Cambios';
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // Exportar a Excel
+    window.exportToExcel = function() {
+      if(kmHistory.length === 0) {
+        alert("No hay datos para exportar.");
+        return;
+      }
+      // Orden cronológico
+      const sorted = kmHistory.slice().sort((a,b) => new Date(a.fecha) - new Date(b.fecha));
+      let data = [["Fecha y hora", "Kilometraje", "Gasolina Q", "Galones", "Km recorridos"]];
+      sorted.forEach((e,i)=>{
+        let diff = i===0 ? '' : (e.km - sorted[i-1].km);
+        data.push([
+          fmtDatetimeLocal(e.fecha),
+          e.km,
+          e.qtz,
+          e.gal,
+          diff
+        ]);
+      });
+      let ws = XLSX.utils.aoa_to_sheet(data);
+      let wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, "Kilometraje");
+      XLSX.writeFile(wb, "KilometrajeVehiculo.xlsx");
+    }
+
     // Inicializar
+    clearForm();
     loadHistory();
   </script>
 </body>
