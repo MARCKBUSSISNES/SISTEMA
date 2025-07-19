@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Control de Kilometraje Vehicular</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@500;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --main: #222b35;
+      --sec: #00c896;
+      --bg: #f4f8fb;
+      --text: #222b35;
+      --card: #fff;
+      --accent: #333;
+    }
+    body {
+      margin: 0;
+      font-family: 'Roboto', sans-serif;
+      background: linear-gradient(135deg, var(--main) 60%, var(--sec) 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .container {
+      background: var(--card);
+      border-radius: 2rem;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.12);
+      padding: 2rem 1rem;
+      width: 100%;
+      max-width: 420px;
+      margin: 1rem;
+      text-align: center;
+    }
+    h1 {
+      color: var(--main);
+      font-size: 2rem;
+      margin-bottom: .2rem;
+    }
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+    input[type="number"] {
+      padding: 1rem;
+      border-radius: 1rem;
+      border: 1px solid #d2dbe3;
+      font-size: 1.2rem;
+      outline: none;
+      background: #f5f8fa;
+      color: var(--text);
+      transition: border-color 0.2s;
+    }
+    input[type="number"]:focus {
+      border-color: var(--sec);
+    }
+    button {
+      padding: .9rem;
+      border: none;
+      border-radius: 1rem;
+      background: var(--sec);
+      color: #fff;
+      font-size: 1.15rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    button:active {
+      background: #009e6d;
+    }
+    .history {
+      margin-top: 1.5rem;
+      text-align: left;
+      max-height: 340px;
+      overflow-y: auto;
+      padding-right: 3px;
+    }
+    .history-entry {
+      background: #e6fbf4;
+      margin-bottom: .8rem;
+      padding: .8rem 1rem;
+      border-radius: 1rem;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.03);
+      font-size: 1.09rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: .8rem;
+      animation: fadeIn .6s;
+    }
+    .date {
+      font-size: .98rem;
+      color: #567;
+      font-weight: 500;
+    }
+    .km {
+      font-size: 1.09rem;
+      color: var(--main);
+      font-weight: 700;
+    }
+    .diff {
+      font-size: 1.06rem;
+      color: var(--sec);
+      font-weight: 700;
+    }
+    .empty {
+      color: #999;
+      text-align: center;
+      padding: 1.8rem 0;
+      font-size: 1.15rem;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(15px);}
+      to   { opacity: 1; transform: none;}
+    }
+    @media (max-width: 450px) {
+      .container { max-width: 99vw; padding: 1rem .3rem; }
+      h1 { font-size: 1.45rem;}
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Control de Kilometraje</h1>
+    <form id="km-form" autocomplete="off">
+      <input 
+        type="number" 
+        id="km-input"
+        min="0"
+        required
+        placeholder="Ingresa el kilometraje actual"
+        inputmode="numeric"
+      />
+      <button type="submit">Registrar Kilometraje</button>
+    </form>
+    <div>
+      <strong>Historial de registros:</strong>
+      <div class="history" id="history"></div>
+    </div>
+  </div>
+  <script>
+    const form = document.getElementById('km-form');
+    const kmInput = document.getElementById('km-input');
+    const historyDiv = document.getElementById('history');
+    const STORAGE_KEY = "km-history-v1";
+    let kmHistory = [];
+
+    // Cargar historial desde LocalStorage
+    function loadHistory() {
+      const data = localStorage.getItem(STORAGE_KEY);
+      if(data) {
+        try {
+          kmHistory = JSON.parse(data);
+        } catch { kmHistory = []; }
+      } else {
+        kmHistory = [];
+      }
+      renderHistory();
+    }
+
+    // Guardar historial en LocalStorage
+    function saveHistory() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(kmHistory));
+    }
+
+    // Renderizar historial en pantalla
+    function renderHistory() {
+      historyDiv.innerHTML = '';
+      if(kmHistory.length === 0) {
+        historyDiv.innerHTML = '<div class="empty">No hay registros aún.</div>';
+        return;
+      }
+      kmHistory.slice().reverse().forEach((entry, idx) => {
+        const prev = kmHistory[kmHistory.length - (idx+2)];
+        const diff = prev ? entry.km - prev.km : 0;
+        const html = `
+          <div class="history-entry">
+            <div>
+              <div class="date">${entry.date}</div>
+              <div class="km">Km: ${entry.km.toLocaleString()}</div>
+            </div>
+            <div>
+              <span class="diff">${prev ? `+${diff} km` : '---'}</span>
+            </div>
+          </div>
+        `;
+        historyDiv.insertAdjacentHTML('beforeend', html);
+      });
+    }
+
+    // Form submit
+    form.onsubmit = e => {
+      e.preventDefault();
+      const km = parseInt(kmInput.value, 10);
+      if(isNaN(km) || km < 0) {
+        kmInput.value = '';
+        kmInput.focus();
+        return;
+      }
+      const now = new Date();
+      const entry = {
+        km,
+        date: now.toLocaleDateString('es-ES', {
+          year: 'numeric', month: 'short', day: '2-digit'
+        }) + ' ' +
+        now.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit'}),
+      };
+      if(kmHistory.length && km < kmHistory[kmHistory.length-1].km) {
+        alert("No puedes ingresar un kilometraje menor al anterior.");
+        return;
+      }
+      kmHistory.push(entry);
+      saveHistory();
+      renderHistory();
+      kmInput.value = '';
+      kmInput.focus();
+    };
+
+    // Inicializar
+    loadHistory();
+  </script>
+</body>
+</html>
