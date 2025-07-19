@@ -7,48 +7,65 @@
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@500;700&display=swap" rel="stylesheet">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
   <style>
-    :root {
-      --main: #222b35;
-      --sec: #00c896;
-      --bg: #f4f8fb;
-      --text: #222b35;
-      --card: #fff;
-      --accent: #333;
-      --danger: #ff5656;
-    }
     html, body {
       height: 100%;
       margin: 0;
       padding: 0;
       font-family: 'Roboto', sans-serif;
-      background: linear-gradient(135deg, var(--main) 60%, var(--sec) 100%);
       min-height: 100vh;
       width: 100vw;
       box-sizing: border-box;
     }
     body {
-      display: flex;
-      align-items: center;
-      justify-content: center;
       min-height: 100vh;
+      min-width: 100vw;
       width: 100vw;
       margin: 0;
+      padding: 0;
+      position: relative;
+      background: #222;
+      /* Imagen de fondo */
+      background-image: url('FONDO123.png');
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
     }
     .container {
-      background: var(--card);
+      background: rgba(255,255,255,0.93);
       border-radius: 1.2rem;
-      box-shadow: 0 8px 32px rgba(0,0,0,0.12);
-      padding: 1.2rem .7rem;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.14);
+      padding: 1.2rem .7rem 1.2rem .7rem;
       width: 100vw;
       max-width: 430px;
-      margin: 0 auto;
+      margin: 2.7rem auto 0 auto;
       box-sizing: border-box;
       text-align: center;
+      flex: 0 0 auto;
+    }
+    .logo-header {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 100%;
+      margin-bottom: .2rem;
+    }
+    .logo-header img {
+      height: 75px;
+      max-width: 85vw;
+      object-fit: contain;
+      border-radius: 1rem;
+      margin: 0 auto .3rem auto;
+      background: rgba(255,255,255,0.95);
+      box-shadow: 0 2px 14px rgba(0,0,0,0.09);
+      padding: .15rem 1.2rem;
+      /* puedes ajustar esto */
     }
     h1 {
-      color: var(--main);
-      font-size: 1.55rem;
-      margin-bottom: .6rem;
+      color: #243348;
+      font-size: 1.25rem;
+      margin-bottom: .68rem;
+      letter-spacing: .02em;
+      font-weight: 700;
     }
     form {
       display: flex;
@@ -63,14 +80,14 @@
       font-size: 1.02rem;
       outline: none;
       background: #f5f8fa;
-      color: var(--text);
+      color: #222b35;
       transition: border-color 0.2s;
       box-sizing: border-box;
       width: 100%;
       margin-bottom: 0;
     }
     input:focus, select:focus {
-      border-color: var(--sec);
+      border-color: #00c896;
     }
     .row2 {
       display: flex;
@@ -86,7 +103,7 @@
       padding: .82rem;
       border: none;
       border-radius: 1rem;
-      background: var(--sec);
+      background: #00c896;
       color: #fff;
       font-size: 1.04rem;
       font-weight: 700;
@@ -106,7 +123,7 @@
       background: #009e6d;
     }
     .btn-edit { background: #3888ff; margin-right: 6px;}
-    .btn-delete { background: var(--danger);}
+    .btn-delete { background: #ff5656;}
     .history {
       margin-top: 1.05rem;
       text-align: left;
@@ -134,8 +151,8 @@
       min-width: 0;
     }
     .date { font-size: .93rem; color: #567; font-weight: 500;}
-    .km, .qtz, .gal { font-size: .99rem; color: var(--main); font-weight: 700;}
-    .diff { font-size: .94rem; color: var(--sec); font-weight: 700;}
+    .km, .qtz, .gal { font-size: .99rem; color: #222b35; font-weight: 700;}
+    .diff { font-size: .94rem; color: #00c896; font-weight: 700;}
     .empty { color: #999; text-align: center; padding: 1.1rem 0; font-size: 1.04rem;}
     .excel-btn, .reset-btn {
       width: 49%;
@@ -153,10 +170,48 @@
     }
     .excel-btn:active { background: #2a60b7;}
     .reset-btn {
-      background: var(--danger);
+      background: #ff5656;
       color: #fff;
     }
     .reset-btn:active { background: #bb2929; }
+    .logo-float-btn {
+      position: fixed;
+      bottom: 18px;
+      right: 17px;
+      z-index: 20;
+      cursor: pointer;
+      background: #fff;
+      border-radius: 50%;
+      box-shadow: 0 5px 20px rgba(0,0,0,0.17);
+      padding: 0.5rem;
+      width: 65px;
+      height: 65px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: box-shadow 0.2s, transform 0.2s;
+    }
+    .logo-float-btn:hover {
+      box-shadow: 0 6px 24px rgba(0,0,0,0.24);
+      transform: scale(1.08);
+    }
+    .logo-float-btn img {
+      width: 50px;
+      height: 50px;
+      object-fit: contain;
+      border-radius: 50%;
+      display: block;
+    }
+    .footer-derechos {
+      text-align: center;
+      font-size: 0.97rem;
+      color: #aaa;
+      margin-top: 2rem;
+      margin-bottom: .4rem;
+      letter-spacing: 0.02em;
+      user-select: none;
+      flex: 0 0 auto;
+    }
     @keyframes fadeIn {
       from { opacity: 0; transform: translateY(15px);}
       to   { opacity: 1; transform: none;}
@@ -178,10 +233,34 @@
       .history {
         max-height: 195px;
       }
+      .footer-derechos {
+        font-size: 0.85rem;
+        margin-top: 1.2rem;
+        margin-bottom: .1rem;
+      }
+      .logo-float-btn {
+        width: 57px;
+        height: 57px;
+        padding: 0.25rem;
+        right: 8px;
+        bottom: 10px;
+      }
+      .logo-float-btn img {
+        width: 40px;
+        height: 40px;
+      }
+      .logo-header img {
+        height: 48px;
+        max-width: 90vw;
+        padding: .09rem .4rem;
+      }
     }
   </style>
 </head>
 <body>
+  <div class="logo-header">
+    <img src="LOGO1.png" alt="Logo Marck Business">
+  </div>
   <div class="container">
     <h1>Control de Kilometraje</h1>
     <div style="display:flex;gap:.6rem;justify-content:space-between;">
@@ -189,7 +268,6 @@
       <button class="reset-btn" onclick="resetData()">Resetear Datos</button>
     </div>
     <form id="km-form" autocomplete="off">
-      <!-- La fecha no se muestra ni es editable, solo se coloca automáticamente -->
       <div class="row2">
         <input type="number" id="km-input" min="0" required placeholder="Kilometraje">
       </div>
@@ -205,6 +283,13 @@
       <div class="history" id="history"></div>
     </div>
   </div>
+  <!-- Botón flotante con logo que descarga y comparte por WhatsApp -->
+  <div class="logo-float-btn" title="Descargar y compartir Excel" onclick="descargarYCompartirExcel()">
+    <img src="LOGO1.png" alt="Compartir">
+  </div>
+  <footer class="footer-derechos">
+    © Marck Business 2025. Todos los derechos reservados.
+  </footer>
   <script>
     const form = document.getElementById('km-form');
     const kmInput = document.getElementById('km-input');
@@ -343,6 +428,19 @@
       XLSX.utils.book_append_sheet(wb, ws, "Kilometraje");
       XLSX.writeFile(wb, "KilometrajeVehiculo.xlsx");
     }
+
+    // Descargar y compartir Excel por WhatsApp (solo texto y guía para adjuntar)
+    function descargarYCompartirExcel() {
+      exportToExcel();
+      // Armar mensaje
+      let msg = encodeURIComponent("Adjunto el archivo de control de kilometraje del vehículo generado por el sistema Marck Business.");
+      // Abrir WhatsApp Web/Móvil
+      window.open("https://wa.me/?text=" + msg, "_blank");
+      // Nota: No se puede adjuntar archivo automáticamente por restricciones web de WhatsApp.
+      alert("El archivo Excel se descargó.\n\nAhora puedes adjuntarlo desde tu teléfono o PC en el chat de WhatsApp que prefieras.");
+    }
+    window.descargarYCompartirExcel = descargarYCompartirExcel;
+
     window.resetData = function() {
       let clave = prompt("Para resetear todos los datos, ingrese la clave:");
       if(clave === null) return;
