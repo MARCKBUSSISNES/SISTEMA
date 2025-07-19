@@ -6,6 +6,7 @@
   <title>Control de Kilometraje Vehicular</title>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@500;700&display=swap" rel="stylesheet">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <style>
     html, body {
       height: 100%;
@@ -24,7 +25,6 @@
       padding: 0;
       position: relative;
       background: #222;
-      /* Imagen de fondo */
       background-image: url('FONDO123.png');
       background-size: cover;
       background-position: center;
@@ -55,10 +55,8 @@
       object-fit: contain;
       border-radius: 1rem;
       margin: 0 auto .3rem auto;
-      background: rgba(255,255,255,0.95);
-      box-shadow: 0 2px 14px rgba(0,0,0,0.09);
       padding: .15rem 1.2rem;
-      /* puedes ajustar esto */
+      background: transparent;
     }
     h1 {
       color: #243348;
@@ -201,6 +199,7 @@
       object-fit: contain;
       border-radius: 50%;
       display: block;
+      background: transparent;
     }
     .footer-derechos {
       text-align: center;
@@ -283,8 +282,8 @@
       <div class="history" id="history"></div>
     </div>
   </div>
-  <!-- Botón flotante con logo que descarga y comparte por WhatsApp -->
-  <div class="logo-float-btn" title="Descargar y compartir Excel" onclick="descargarYCompartirExcel()">
+  <!-- Botón flotante con logo que descarga y comparte PDF por WhatsApp -->
+  <div class="logo-float-btn" title="Descargar y compartir PDF" onclick="descargarYCompartirPDF()">
     <img src="LOGO1.png" alt="Compartir">
   </div>
   <footer class="footer-derechos">
@@ -302,7 +301,6 @@
     let kmHistory = [];
 
     function getCurrentDatetime() {
-      // Obtiene la fecha/hora exacta en ISO string
       return new Date().toISOString();
     }
     function fmtDatetimeLocal(str) {
@@ -360,7 +358,6 @@
         });
     }
 
-    // Solo puedes ingresar/editar con la fecha/hora automática
     form.onsubmit = e => {
       e.preventDefault();
       const km = parseInt(kmInput.value, 10);
@@ -388,7 +385,6 @@
         return;
       }
       if(isEdit) {
-        // Mantiene la fecha original del registro editado
         kmHistory[idx] = { fecha: kmHistory[idx].fecha, km, qtz, gal };
       } else {
         kmHistory.push({ fecha, km, qtz, gal });
@@ -429,17 +425,71 @@
       XLSX.writeFile(wb, "KilometrajeVehiculo.xlsx");
     }
 
-    // Descargar y compartir Excel por WhatsApp (solo texto y guía para adjuntar)
-    function descargarYCompartirExcel() {
-      exportToExcel();
-      // Armar mensaje
-      let msg = encodeURIComponent("Adjunto el archivo de control de kilometraje del vehículo generado por el sistema Marck Business.");
-      // Abrir WhatsApp Web/Móvil
+    // PDF GENERATOR y compartir por WhatsApp
+    function descargarYCompartirPDF() {
+      if(kmHistory.length === 0) {
+        alert("No hay datos para exportar.");
+        return;
+      }
+      // Armar los datos a tabla PDF
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF();
+
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(15);
+      doc.text("Control de Kilometraje", 105, 18, { align: "center" });
+
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(11);
+      doc.text("Marck Business 2025", 105, 26, { align: "center" });
+
+      let startY = 35;
+      doc.autoTable && doc.autoTable({
+        startY,
+        head: [["Fecha y hora", "Kilometraje", "Gasolina Q", "Galones", "Km recorridos"]],
+        body: kmHistory.slice().sort((a,b)=>new Date(a.fecha)-new Date(b.fecha)).map((e,i,arr)=>{
+          let diff = i===0 ? "" : (e.km - arr[i-1].km);
+          return [
+            fmtDatetimeLocal(e.fecha),
+            e.km,
+            e.qtz,
+            e.gal,
+            diff
+          ];
+        }),
+        styles: { fontSize: 10 },
+        theme: 'striped',
+        headStyles: { fillColor: [0,200,150] }
+      });
+
+      // Si no hay autoTable (algunas versiones), poner básico:
+      if(!doc.autoTable){
+        let sorted = kmHistory.slice().sort((a,b)=>new Date(a.fecha)-new Date(b.fecha));
+        let y = startY;
+        doc.setFontSize(10);
+        doc.text("Fecha y hora           Kilometraje    Gasolina Q    Galones    Km recorridos", 12, y);
+        y+=7;
+        sorted.forEach((e,i)=>{
+          let diff = i===0 ? "" : (e.km - sorted[i-1].km);
+          doc.text(
+            fmtDatetimeLocal(e.fecha).padEnd(22) + " " +
+            String(e.km).padEnd(12) + " " +
+            String(e.qtz).padEnd(12) + " " +
+            String(e.gal).padEnd(10) + " " +
+            String(diff),
+            12, y
+          );
+          y+=7;
+        });
+      }
+
+      doc.save("KilometrajeVehiculo.pdf");
+
+      let msg = encodeURIComponent("Adjunto el PDF de control de kilometraje del vehículo generado por el sistema Marck Business.");
       window.open("https://wa.me/?text=" + msg, "_blank");
-      // Nota: No se puede adjuntar archivo automáticamente por restricciones web de WhatsApp.
-      alert("El archivo Excel se descargó.\n\nAhora puedes adjuntarlo desde tu teléfono o PC en el chat de WhatsApp que prefieras.");
+      alert("El PDF se descargó.\n\nAhora puedes adjuntarlo desde tu teléfono o PC en el chat de WhatsApp que prefieras.");
     }
-    window.descargarYCompartirExcel = descargarYCompartirExcel;
+    window.descargarYCompartirPDF = descargarYCompartirPDF;
 
     window.resetData = function() {
       let clave = prompt("Para resetear todos los datos, ingrese la clave:");
