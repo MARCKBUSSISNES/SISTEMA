@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+  <!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
@@ -9,7 +9,246 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.1/jspdf.plugin.autotable.min.js"></script>
   <style>
-    /* ... mismos estilos que el usuario proporcionó ... */
+    html, body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      font-family: 'Roboto', sans-serif;
+      min-height: 100vh;
+      width: 100vw;
+      box-sizing: border-box;
+    }
+    body {
+      min-height: 100vh;
+      min-width: 100vw;
+      width: 100vw;
+      margin: 0;
+      padding: 0;
+      position: relative;
+      background: #222;
+      background-image: url('FONDO123.png');
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+    }
+    .container {
+      background: rgba(255,255,255,0.93);
+      border-radius: 1.2rem;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.14);
+      padding: 1.2rem .7rem 1.2rem .7rem;
+      width: 100vw;
+      max-width: 430px;
+      margin: 2.7rem auto 0 auto;
+      box-sizing: border-box;
+      text-align: center;
+      flex: 0 0 auto;
+    }
+    .logo-header {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 100%;
+      margin-bottom: .2rem;
+    }
+    .logo-header img {
+      height: 440px;
+      max-width: 360vw;
+      object-fit: contain;
+      margin: 0 auto .3rem auto;
+      background: transparent;
+      display: block;
+    }
+    h1 {
+      color: #243348;
+      font-size: 1.25rem;
+      margin-bottom: .68rem;
+      letter-spacing: .02em;
+      font-weight: 700;
+    }
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: .7rem;
+      margin-bottom: 1.3rem;
+    }
+    input, select {
+      padding: .85rem;
+      border-radius: .95rem;
+      border: 1px solid #d2dbe3;
+      font-size: 1.02rem;
+      outline: none;
+      background: #f5f8fa;
+      color: #222b35;
+      transition: border-color 0.2s;
+      box-sizing: border-box;
+      width: 100%;
+      margin-bottom: 0;
+    }
+    input:focus, select:focus {
+      border-color: #00c896;
+    }
+    .row2 {
+      display: flex;
+      gap: .5rem;
+      width: 100%;
+      margin-bottom: 0;
+    }
+    .row2 > * {
+      flex: 1 1 0;
+      min-width: 0;
+    }
+    button, .btn {
+      padding: .82rem;
+      border: none;
+      border-radius: 1rem;
+      background: #00c896;
+      color: #fff;
+      font-size: 1.04rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.2s;
+      margin-top: .22rem;
+      width: 100%;
+      box-sizing: border-box;
+    }
+    .btn {
+      display: inline-block;
+      padding: .5rem 1rem;
+      font-size: 1rem;
+      margin-top: 0;
+    }
+    button:active, .btn:active {
+      background: #009e6d;
+    }
+    .btn-edit { background: #3888ff; margin-right: 6px;}
+    .btn-delete { background: #ff5656;}
+    .history {
+      margin-top: 1.05rem;
+      text-align: left;
+      max-height: 260px;
+      overflow-y: auto;
+      padding-right: 3px;
+      box-sizing: border-box;
+    }
+    .history-entry {
+      background: #e6fbf4;
+      margin-bottom: .57rem;
+      padding: .7rem .85rem;
+      border-radius: 1rem;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.03);
+      font-size: .98rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: .6rem;
+      animation: fadeIn .6s;
+      word-break: break-word;
+    }
+    .entry-details {
+      flex: 1;
+      min-width: 0;
+    }
+    .date { font-size: .93rem; color: #567; font-weight: 500;}
+    .km, .qtz, .gal { font-size: .99rem; color: #222b35; font-weight: 700;}
+    .diff { font-size: .94rem; color: #00c896; font-weight: 700;}
+    .empty { color: #999; text-align: center; padding: 1.1rem 0; font-size: 1.04rem;}
+    .excel-btn, .reset-btn {
+      width: 49%;
+      display: inline-block;
+      margin-bottom: .7rem;
+      margin-top: .7rem;
+      box-sizing: border-box;
+      font-size: 1.01rem;
+      font-weight: 700;
+    }
+    .excel-btn {
+      background: #3888ff;
+      color: #fff;
+      margin-right: 2%;
+    }
+    .excel-btn:active { background: #2a60b7;}
+    .reset-btn {
+      background: #ff5656;
+      color: #fff;
+    }
+    .reset-btn:active { background: #bb2929; }
+
+    .logo-float-btn {
+      position: fixed;
+      bottom: 18px;
+      right: 17px;
+      z-index: 20;
+      cursor: pointer;
+      background: transparent;
+      border-radius: 0;
+      box-shadow: none;
+      padding: 0;
+      width: 68px;
+      height: 68px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.13s;
+      border: none;
+    }
+    .logo-float-btn:hover, .logo-float-btn:active {
+      transform: scale(1.08);
+      box-shadow: none;
+    }
+    .logo-float-btn img {
+      width: 66px;
+      height: 66px;
+      object-fit: contain;
+      border-radius: 0;
+      display: block;
+      background: transparent;
+      border: none;
+      box-shadow: none;
+      padding: 0;
+      margin: 0;
+    }
+    .footer-derechos {
+      text-align: center;
+      font-size: 0.97rem;
+      color: #aaa;
+      margin-top: 2rem;
+      margin-bottom: .4rem;
+      letter-spacing: 0.02em;
+      user-select: none;
+      flex: 0 0 auto;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(15px);}
+      to   { opacity: 1; transform: none;}
+    }
+    @media (max-width: 600px) {
+      .logo-header img { height: 80px;}
+      .logo-float-btn { width: 55px; height: 55px;}
+      .logo-float-btn img { width: 54px; height: 54px;}
+    }
+    @media (max-width: 450px) {
+      .container {
+        max-width: 99vw;
+        padding: .6rem .2rem;
+        border-radius: 0.5rem;
+      }
+      .row2 {
+        flex-direction: column;
+        gap: .25rem;
+      }
+      button, .btn, .excel-btn, .reset-btn {
+        font-size: .97rem;
+        padding: .74rem;
+      }
+      .history {
+        max-height: 195px;
+      }
+      .footer-derechos {
+        font-size: 0.85rem;
+        margin-top: 1.2rem;
+        margin-bottom: .1rem;
+      }
+    }
   </style>
 </head>
 <body>
@@ -27,14 +266,8 @@
         <input type="number" id="km-input" min="0" required placeholder="Kilometraje">
       </div>
       <div class="row2">
-        <input type="datetime-local" id="fecha-input" required>
-      </div>
-      <div class="row2">
         <input type="number" id="qtz-input" min="0" step="0.01" required placeholder="Gasolina Q">
         <input type="number" id="gal-input" min="0" step="0.01" required placeholder="Gasolina Gal">
-      </div>
-      <div class="row2">
-        <input type="file" id="imagen-input" accept="image/*">
       </div>
       <button type="submit" id="save-btn">Registrar / Guardar</button>
       <input type="hidden" id="edit-index">
@@ -44,227 +277,224 @@
       <div class="history" id="history"></div>
     </div>
   </div>
+  <!-- Botón flotante con logo que descarga PDF -->
   <div class="logo-float-btn" title="Descargar PDF" onclick="descargarPDF()">
     <img src="LOGO1.png" alt="Descargar PDF">
   </div>
   <footer class="footer-derechos">
     © Marck Business 2025. Todos los derechos reservados.
   </footer>
-<script>
-const form = document.getElementById('km-form');
-const kmInput = document.getElementById('km-input');
-const qtzInput = document.getElementById('qtz-input');
-const galInput = document.getElementById('gal-input');
-const fechaInput = document.getElementById('fecha-input');
-const imagenInput = document.getElementById('imagen-input');
-const historyDiv = document.getElementById('history');
-const editIndex = document.getElementById('edit-index');
-const saveBtn = document.getElementById('save-btn');
-const STORAGE_KEY = "km-history-v2";
-let kmHistory = [];
+  <script>
+    const form = document.getElementById('km-form');
+    const kmInput = document.getElementById('km-input');
+    const qtzInput = document.getElementById('qtz-input');
+    const galInput = document.getElementById('gal-input');
+    const historyDiv = document.getElementById('history');
+    const editIndex = document.getElementById('edit-index');
+    const saveBtn = document.getElementById('save-btn');
+    const STORAGE_KEY = "km-history-v2";
+    let kmHistory = [];
 
-function getCurrentDatetime() {
-  return new Date().toISOString();
-}
-function fmtDatetimeLocal(str) {
-  let d = new Date(str);
-  return d.toLocaleDateString('es-ES', {year: 'numeric', month: 'short', day: '2-digit'}) +
-    ' ' + d.toLocaleTimeString('es-ES', {hour: '2-digit', minute: '2-digit'});
-}
-function loadHistory() {
-  const data = localStorage.getItem(STORAGE_KEY);
-  if(data) {
-    try { kmHistory = JSON.parse(data); }
-    catch { kmHistory = []; }
-  } else { kmHistory = []; }
-  renderHistory();
-}
-function saveHistory() {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(kmHistory));
-}
-function clearForm() {
-  kmInput.value = '';
-  qtzInput.value = '';
-  galInput.value = '';
-  fechaInput.value = '';
-  imagenInput.value = '';
-  editIndex.value = '';
-  saveBtn.textContent = 'Registrar / Guardar';
-}
-function renderHistory() {
-  historyDiv.innerHTML = '';
-  if(kmHistory.length === 0) {
-    historyDiv.innerHTML = '<div class="empty">No hay registros aún.</div>';
-    return;
-  }
-  kmHistory
-    .map((entry, idx) => ({...entry, idx}))
-    .sort((a,b) => new Date(b.fecha) - new Date(a.fecha))
-    .forEach((entry, indexSorted, arr) => {
-      const entriesByDate = kmHistory.slice().sort((a,b) => new Date(a.fecha) - new Date(b.fecha));
-      const currPos = entriesByDate.findIndex(e => e.fecha === entry.fecha && e.km === entry.km);
-      const prev = currPos > 0 ? entriesByDate[currPos-1] : null;
-      const diff = prev ? entry.km - prev.km : 0;
-      const html = `
-        <div class="history-entry">
-          <div class="entry-details">
-            <div class="date">${fmtDatetimeLocal(entry.fecha)}</div>
-            <div class="km">Km: ${Number(entry.km).toLocaleString()}</div>
-            <div class="qtz">Gasolina: Q${Number(entry.qtz).toLocaleString(undefined,{minimumFractionDigits:2})}</div>
-            <div class="gal">Galones: ${Number(entry.gal).toLocaleString(undefined,{minimumFractionDigits:2})} gal</div>
-            <div class="diff">${prev ? `+${diff} km desde anterior` : '---'}</div>
-            ${entry.imagen ? `<img src="${entry.imagen}" style="max-width:100%;margin-top:.5rem;border-radius:.5rem">` : ''}
-          </div>
-          <div>
-            <button class="btn btn-edit" onclick="editEntry(${entry.idx})">Editar</button>
-          </div>
-        </div>
-      `;
-      historyDiv.insertAdjacentHTML('beforeend', html);
-    });
-}
-
-form.onsubmit = e => {
-  e.preventDefault();
-  const km = parseInt(kmInput.value, 10);
-  const qtz = parseFloat(qtzInput.value);
-  const gal = parseFloat(galInput.value);
-  const fecha = fechaInput.value ? new Date(fechaInput.value).toISOString() : getCurrentDatetime();
-
-  if(isNaN(km) || isNaN(qtz) || isNaN(gal) || km < 0 || qtz < 0 || gal < 0) {
-    alert("Por favor, ingresa datos válidos.");
-    return;
-  }
-
-  let imagenBase64 = '';
-  if (imagenInput.files.length > 0) {
-    const reader = new FileReader();
-    reader.onload = function(e) {
-      imagenBase64 = e.target.result;
-      guardarRegistro(km, qtz, gal, fecha, imagenBase64);
-    };
-    reader.readAsDataURL(imagenInput.files[0]);
-  } else {
-    guardarRegistro(km, qtz, gal, fecha, '');
-  }
-};
-
-function guardarRegistro(km, qtz, gal, fecha, imagen) {
-  let idx = editIndex.value !== '' ? parseInt(editIndex.value,10) : null;
-  let isEdit = idx !== null && !isNaN(idx);
-
-  let sortedEntries = kmHistory.slice().sort((a,b)=>new Date(a.fecha)-new Date(b.fecha));
-  let before = sortedEntries.find(e=>new Date(e.fecha)<new Date(fecha));
-  let after = sortedEntries.find(e=>new Date(e.fecha)>new Date(fecha));
-  if(before && km < before.km) {
-    alert("El kilometraje no puede ser menor que el registro anterior.");
-    return;
-  }
-  if(after && km > after.km) {
-    alert("El kilometraje no puede ser mayor que el siguiente registro.");
-    return;
-  }
-  const newEntry = { fecha, km, qtz, gal, imagen };
-  if(isEdit) {
-    kmHistory[idx] = { ...kmHistory[idx], ...newEntry };
-  } else {
-    kmHistory.push(newEntry);
-  }
-  saveHistory();
-  renderHistory();
-  clearForm();
-}
-
-window.editEntry = function(idx) {
-  const entry = kmHistory[idx];
-  kmInput.value = entry.km;
-  qtzInput.value = entry.qtz;
-  galInput.value = entry.gal;
-  fechaInput.value = new Date(entry.fecha).toISOString().slice(0, 16);
-  editIndex.value = idx;
-  saveBtn.textContent = 'Guardar Cambios';
-  window.scrollTo({ top: 0, behavior: 'smooth' });
-}
-
-function descargarPDF() {
-  if (kmHistory.length === 0) return alert("No hay datos para exportar.");
-  const { jsPDF } = window.jspdf;
-  const doc = new jsPDF();
-  const pageWidth = doc.internal.pageSize.getWidth();
-
-  doc.addImage('LOGO1.png', 'PNG', 85, 7, 40, 25);
-  doc.setFont("helvetica", "bold");
-  doc.setFontSize(18);
-  doc.text("Control de Kilometraje", 105, 38, { align: "center" });
-  doc.setFont("helvetica", "normal");
-  doc.setFontSize(13);
-  doc.text("Marck Business 2025", 105, 46, { align: "center" });
-
-  const sorted = kmHistory.slice().sort((a, b) => new Date(a.fecha) - new Date(b.fecha));
-  const body = sorted.map((e, i, arr) => [
-    fmtDatetimeLocal(e.fecha),
-    e.km,
-    "Q" + Number(e.qtz).toLocaleString(undefined, { minimumFractionDigits: 2 }),
-    Number(e.gal).toLocaleString(undefined, { minimumFractionDigits: 2 }) + " gal",
-    i === 0 ? "" : (e.km - arr[i - 1].km)
-  ]);
-
-  let finalY = 54;
-  doc.autoTable({
-    startY: finalY,
-    head: [['Fecha y hora', 'Kilometraje', 'Gasolina (Q)', 'Galones', 'Km recorridos']],
-    body: body,
-    styles: { fontSize: 11, halign: 'center' },
-    headStyles: { fillColor: [0, 200, 150], textColor: 255, fontStyle: 'bold' },
-    bodyStyles: { textColor: 30 },
-    theme: 'striped',
-    margin: { left: 12, right: 12 },
-    didDrawPage: function (data) {
-      finalY = data.cursor.y + 10;
+    function getCurrentDatetime() {
+      return new Date().toISOString();
     }
-  });
-
-  let y = finalY;
-  sorted.forEach((entry) => {
-    if (entry.imagen) {
-      const imgProps = doc.getImageProperties(entry.imagen);
-      const imgWidth = pageWidth - 40;
-      const ratio = imgProps.height / imgProps.width;
-      const imgHeight = imgWidth * ratio;
-      if (y + imgHeight > 280) {
-        doc.addPage();
-        y = 20;
+    function fmtDatetimeLocal(str) {
+      let d = new Date(str);
+      return d.toLocaleDateString('es-ES', {year: 'numeric', month: 'short', day: '2-digit'}) +
+        ' ' + d.toLocaleTimeString('es-ES', {hour: '2-digit', minute: '2-digit'});
+    }
+    function loadHistory() {
+      const data = localStorage.getItem(STORAGE_KEY);
+      if(data) {
+        try { kmHistory = JSON.parse(data); }
+        catch { kmHistory = []; }
+      } else { kmHistory = []; }
+      renderHistory();
+    }
+    function saveHistory() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(kmHistory));
+    }
+    function clearForm() {
+      kmInput.value = '';
+      qtzInput.value = '';
+      galInput.value = '';
+      editIndex.value = '';
+      saveBtn.textContent = 'Registrar / Guardar';
+    }
+    function renderHistory() {
+      historyDiv.innerHTML = '';
+      if(kmHistory.length === 0) {
+        historyDiv.innerHTML = '<div class="empty">No hay registros aún.</div>';
+        return;
       }
-      doc.setFontSize(12);
-      doc.text(`Imagen del día: ${fmtDatetimeLocal(entry.fecha)}`, pageWidth / 2, y, { align: "center" });
-      y += 4;
-      doc.addImage(entry.imagen, 'JPEG', 20, y, imgWidth, imgHeight);
-      y += imgHeight + 10;
+      kmHistory
+        .map((entry, idx) => ({...entry, idx}))
+        .sort((a,b) => new Date(b.fecha) - new Date(a.fecha))
+        .forEach((entry, indexSorted, arr) => {
+          const entriesByDate = kmHistory.slice().sort((a,b) => new Date(a.fecha) - new Date(b.fecha));
+          const currPos = entriesByDate.findIndex(e => e.fecha === entry.fecha && e.km === entry.km);
+          const prev = currPos > 0 ? entriesByDate[currPos-1] : null;
+          const diff = prev ? entry.km - prev.km : 0;
+          const html = `
+            <div class="history-entry">
+              <div class="entry-details">
+                <div class="date">${fmtDatetimeLocal(entry.fecha)}</div>
+                <div class="km">Km: ${Number(entry.km).toLocaleString()}</div>
+                <div class="qtz">Gasolina: Q${Number(entry.qtz).toLocaleString(undefined,{minimumFractionDigits:2})}</div>
+                <div class="gal">Galones: ${Number(entry.gal).toLocaleString(undefined,{minimumFractionDigits:2})} gal</div>
+                <div class="diff">${prev ? `+${diff} km desde anterior` : '---'}</div>
+              </div>
+              <div>
+                <button class="btn btn-edit" onclick="editEntry(${entry.idx})">Editar</button>
+              </div>
+            </div>
+          `;
+          historyDiv.insertAdjacentHTML('beforeend', html);
+        });
     }
-  });
 
-  doc.save("KilometrajeVehiculo.pdf");
-}
-window.descargarPDF = descargarPDF;
+    form.onsubmit = e => {
+      e.preventDefault();
+      const km = parseInt(kmInput.value, 10);
+      const qtz = parseFloat(qtzInput.value);
+      const gal = parseFloat(galInput.value);
+      const fecha = getCurrentDatetime();
 
-window.resetData = function() {
-  let clave = prompt("Para resetear todos los datos, ingrese la clave:");
-  if(clave === null) return;
-  if(clave === "22782522") {
-    if(confirm("¿Está seguro que desea borrar TODOS los datos? Esta acción no se puede deshacer.")) {
-      localStorage.removeItem(STORAGE_KEY);
-      kmHistory = [];
+      if(isNaN(km) || isNaN(qtz) || isNaN(gal) || km < 0 || qtz < 0 || gal < 0) {
+        alert("Por favor, ingresa datos válidos.");
+        return;
+      }
+
+      let idx = editIndex.value !== '' ? parseInt(editIndex.value,10) : null;
+      let isEdit = idx !== null && !isNaN(idx);
+
+      let sortedEntries = kmHistory.slice().sort((a,b)=>new Date(a.fecha)-new Date(b.fecha));
+      let before = sortedEntries.find(e=>new Date(e.fecha)<new Date(fecha));
+      let after = sortedEntries.find(e=>new Date(e.fecha)>new Date(fecha));
+      if(before && km < before.km) {
+        alert("El kilometraje no puede ser menor que el registro anterior.");
+        return;
+      }
+      if(after && km > after.km) {
+        alert("El kilometraje no puede ser mayor que el siguiente registro.");
+        return;
+      }
+      if(isEdit) {
+        kmHistory[idx] = { fecha: kmHistory[idx].fecha, km, qtz, gal };
+      } else {
+        kmHistory.push({ fecha, km, qtz, gal });
+      }
+      saveHistory();
       renderHistory();
       clearForm();
-      alert("¡Todos los datos han sido borrados!");
+    };
+    window.editEntry = function(idx) {
+      const entry = kmHistory[idx];
+      kmInput.value = entry.km;
+      qtzInput.value = entry.qtz;
+      galInput.value = entry.gal;
+      editIndex.value = idx;
+      saveBtn.textContent = 'Guardar Cambios';
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     }
-  } else {
-    alert("Clave incorrecta. No se han borrado los datos.");
-  }
-}
-clearForm();
-loadHistory();
-</script>
+    window.exportToExcel = function() {
+      if(kmHistory.length === 0) {
+        alert("No hay datos para exportar.");
+        return;
+      }
+      const sorted = kmHistory.slice().sort((a,b) => new Date(a.fecha) - new Date(b.fecha));
+      let data = [["Fecha y hora", "Kilometraje", "Gasolina Q", "Galones", "Km recorridos"]];
+      sorted.forEach((e,i)=>{
+        let diff = i===0 ? '' : (e.km - sorted[i-1].km);
+        data.push([
+          fmtDatetimeLocal(e.fecha),
+          e.km,
+          e.qtz,
+          e.gal,
+          diff
+        ]);
+      });
+      let ws = XLSX.utils.aoa_to_sheet(data);
+      let wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, "Kilometraje");
+      XLSX.writeFile(wb, "KilometrajeVehiculo.xlsx");
+    }
+
+    // PDF bonito y centrado con tabla
+    function descargarPDF() {
+      if(kmHistory.length === 0) {
+        alert("No hay datos para exportar.");
+        return;
+      }
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF();
+
+      // LOGO (opcional)
+      var logo = new Image();
+      logo.src = 'LOGO1.png';
+
+      // Si deseas incluir el logo, puedes hacerlo así:
+      doc.addImage('LOGO1.png', 'PNG', 85, 7, 40, 25);
+
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(18);
+      doc.text("Control de Kilometraje", 105, 38, { align: "center" });
+
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(13);
+      doc.text("Marck Business 2025", 105, 46, { align: "center" });
+
+      // TABLA
+      const sorted = kmHistory.slice().sort((a, b) => new Date(a.fecha) - new Date(b.fecha));
+      const body = sorted.map((e, i, arr) => [
+        fmtDatetimeLocal(e.fecha),
+        e.km,
+        "Q" + Number(e.qtz).toLocaleString(undefined, {minimumFractionDigits:2}),
+        Number(e.gal).toLocaleString(undefined, {minimumFractionDigits:2}) + " gal",
+        i === 0 ? "" : (e.km - arr[i - 1].km)
+      ]);
+
+      doc.autoTable({
+        startY: 54,
+        head: [['Fecha y hora', 'Kilometraje', 'Gasolina (Q)', 'Galones', 'Km recorridos']],
+        body: body,
+        styles: {
+          fontSize: 11,
+          halign: 'center',
+        },
+        headStyles: {
+          fillColor: [0, 200, 150],
+          textColor: 255,
+          fontStyle: 'bold',
+        },
+        bodyStyles: {
+          textColor: 30,
+        },
+        theme: 'striped',
+        margin: { left: 12, right: 12 }
+      });
+
+      doc.save("KilometrajeVehiculo.pdf");
+    }
+    window.descargarPDF = descargarPDF;
+
+    window.resetData = function() {
+      let clave = prompt("Para resetear todos los datos, ingrese la clave:");
+      if(clave === null) return;
+      if(clave === "22782522") {
+        if(confirm("¿Está seguro que desea borrar TODOS los datos? Esta acción no se puede deshacer.")) {
+          localStorage.removeItem(STORAGE_KEY);
+          kmHistory = [];
+          renderHistory();
+          clearForm();
+          alert("¡Todos los datos han sido borrados!");
+        }
+      } else {
+        alert("Clave incorrecta. No se han borrado los datos.");
+      }
+    }
+    clearForm();
+    loadHistory();
+  </script>
 </body>
 </html>
-
