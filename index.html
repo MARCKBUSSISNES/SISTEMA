@@ -1,4 +1,10 @@
-  <!DOCTYPE html>
+ <!--
+Cambios realizados:
+- Agregado campo datetime-local para permitir la edición manual de la fecha.
+- Al editar un registro, la fecha también es editable.
+El resto queda idéntico.
+-->
+<!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
@@ -265,6 +271,10 @@
       <div class="row2">
         <input type="number" id="km-input" min="0" required placeholder="Kilometraje">
       </div>
+      <!-- CAMPO NUEVO para la fecha -->
+      <div class="row2">
+        <input type="datetime-local" id="fecha-input" required>
+      </div>
       <div class="row2">
         <input type="number" id="qtz-input" min="0" step="0.01" required placeholder="Gasolina Q">
         <input type="number" id="gal-input" min="0" step="0.01" required placeholder="Gasolina Gal">
@@ -289,6 +299,7 @@
     const kmInput = document.getElementById('km-input');
     const qtzInput = document.getElementById('qtz-input');
     const galInput = document.getElementById('gal-input');
+    const fechaInput = document.getElementById('fecha-input');
     const historyDiv = document.getElementById('history');
     const editIndex = document.getElementById('edit-index');
     const saveBtn = document.getElementById('save-btn');
@@ -318,6 +329,7 @@
       kmInput.value = '';
       qtzInput.value = '';
       galInput.value = '';
+      fechaInput.value = '';
       editIndex.value = '';
       saveBtn.textContent = 'Registrar / Guardar';
     }
@@ -358,7 +370,8 @@
       const km = parseInt(kmInput.value, 10);
       const qtz = parseFloat(qtzInput.value);
       const gal = parseFloat(galInput.value);
-      const fecha = getCurrentDatetime();
+      // Usar la fecha ingresada manualmente, o la actual si está vacío
+      const fecha = fechaInput.value ? new Date(fechaInput.value).toISOString() : getCurrentDatetime();
 
       if(isNaN(km) || isNaN(qtz) || isNaN(gal) || km < 0 || qtz < 0 || gal < 0) {
         alert("Por favor, ingresa datos válidos.");
@@ -380,7 +393,7 @@
         return;
       }
       if(isEdit) {
-        kmHistory[idx] = { fecha: kmHistory[idx].fecha, km, qtz, gal };
+        kmHistory[idx] = { fecha, km, qtz, gal };
       } else {
         kmHistory.push({ fecha, km, qtz, gal });
       }
@@ -393,6 +406,8 @@
       kmInput.value = entry.km;
       qtzInput.value = entry.qtz;
       galInput.value = entry.gal;
+      // Cargar la fecha al editar (convertida a formato local para datetime-local)
+      fechaInput.value = new Date(entry.fecha).toISOString().slice(0, 16);
       editIndex.value = idx;
       saveBtn.textContent = 'Guardar Cambios';
       window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -429,11 +444,8 @@
       const { jsPDF } = window.jspdf;
       const doc = new jsPDF();
 
-      // LOGO (opcional)
       var logo = new Image();
       logo.src = 'LOGO1.png';
-
-      // Si deseas incluir el logo, puedes hacerlo así:
       doc.addImage('LOGO1.png', 'PNG', 85, 7, 40, 25);
 
       doc.setFont("helvetica", "bold");
@@ -444,7 +456,6 @@
       doc.setFontSize(13);
       doc.text("Marck Business 2025", 105, 46, { align: "center" });
 
-      // TABLA
       const sorted = kmHistory.slice().sort((a, b) => new Date(a.fecha) - new Date(b.fecha));
       const body = sorted.map((e, i, arr) => [
         fmtDatetimeLocal(e.fecha),
